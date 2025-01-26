@@ -1,3 +1,4 @@
+// Select all the span elements inside the '.nums' container
 const nums = document.querySelectorAll('.nums span')
 const counter = document.querySelector('.counter')
 const finalMessage = document.querySelector('.final')
