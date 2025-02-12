@@ -1,41 +1,44 @@
-const imgs = document.getElementById('imgs')
-const leftBtn = document.getElementById('left')
-const rightBtn = document.getElementById('right')
+const imgsContainer = document.getElementById('imgs');
+const leftBtn = document.getElementById('left');
+const rightBtn = document.getElementById('right');
+const images = document.querySelectorAll('#imgs img');
 
-const img = document.querySelectorAll('#imgs img')
-
-let idx = 0
-
-let interval = setInterval(run, 2000)
+let idx = 0;
+let interval = setInterval(run, 3000); // Adjusted interval for better visibility
 
 function run() {
-    idx++
-    changeImage()
+    idx++;
+    changeImage();
 }
 
 function changeImage() {
-    if(idx > img.length - 1) {
-        idx = 0
-    } else if(idx < 0) {
-        idx = img.length - 1
+    if (idx >= images.length) {
+        idx = 0;
+    } else if (idx < 0) {
+        idx = images.length - 1;
     }
 
-    imgs.style.transform = `translateX(${-idx * 500}px)`
+    imgsContainer.style.transition = 'transform 0.5s ease-in-out'; // Smooth transition
+    imgsContainer.style.transform = `translateX(${-idx * 500}px)`;
 }
 
 function resetInterval() {
-    clearInterval(interval)
-    interval = setInterval(run, 2000)
+    clearInterval(interval);
+    interval = setInterval(run, 3000);
 }
 
 rightBtn.addEventListener('click', () => {
-    idx++
-    changeImage()
-    resetInterval()
-})
+    idx++;
+    changeImage();
+    resetInterval();
+});
 
 leftBtn.addEventListener('click', () => {
-    idx--
-    changeImage()
-    resetInterval()
-})
+    idx--;
+    changeImage();
+    resetInterval();
+});
+
+// Pause auto-slide when the user hovers over the images
+imgsContainer.addEventListener('mouseenter', () => clearInterval(interval));
+imgsContainer.addEventListener('mouseleave', resetInterval);
