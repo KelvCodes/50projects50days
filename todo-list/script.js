@@ -1,65 +1,58 @@
-const form = document.getElementById('form')
-const input = document.getElementById('input')
-const todosUL = document.getElementById('todos')
+const form = document.getElementById('form');
+const input = document.getElementById('input');
+const todosUL = document.getElementById('todos');
 
-const todos = JSON.parse(localStorage.getItem('todos'))
-
-if(todos) {
-    todos.forEach(todo => addTodo(todo))
-}
+document.addEventListener('DOMContentLoaded', loadTodos);
 
 form.addEventListener('submit', (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    addTodo();
+});
 
-    addTodo()
-})
+function addTodo(todo = null) {
+    const todoText = todo ? todo.text : input.value.trim();
 
-function addTodo(todo) {
-    let todoText = input.value
+    if (!todoText) return;
 
-    if(todo) {
-        todoText = todo.text
+    const todoEl = document.createElement('li');
+    todoEl.innerText = todoText;
+    todoEl.dataset.completed = todo?.completed || false;
+    
+    if (todo?.completed) {
+        todoEl.classList.add('completed');
     }
 
-    if(todoText) {
-        const todoEl = document.createElement('li')
-        if(todo && todo.completed) {
-            todoEl.classList.add('completed')
-        }
+    // Click to toggle completed state
+    todoEl.addEventListener('click', () => {
+        todoEl.classList.toggle('completed');
+        todoEl.dataset.completed = todoEl.classList.contains('completed');
+        updateLS();
+    });
 
-        todoEl.innerText = todoText
+    // Right-click to delete
+    todoEl.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        todoEl.remove();
+        updateLS();
+    });
 
-        todoEl.addEventListener('click', () => {
-            todoEl.classList.toggle('completed')
-            updateLS()
-        }) 
+    todosUL.appendChild(todoEl);
 
-        todoEl.addEventListener('contextmenu', (e) => {
-            e.preventDefault()
+    if (!todo) input.value = ''; // Clear input only if manually added
 
-            todoEl.remove()
-            updateLS()
-        }) 
-
-        todosUL.appendChild(todoEl)
-
-        input.value = ''
-
-        updateLS()
-    }
+    updateLS();
 }
 
 function updateLS() {
-    todosEl = document.querySelectorAll('li')
+    const todos = Array.from(document.querySelectorAll('li')).map(todoEl => ({
+        text: todoEl.innerText,
+        completed: todoEl.dataset.completed === "true"
+    }));
 
-    const todos = []
+    localStorage.setItem('todos', JSON.stringify(todos));
+}
 
-    todosEl.forEach(todoEl => {
-        todos.push({
-            text: todoEl.innerText,
-            completed: todoEl.classList.contains('completed')
-        })
-    })
-
-    localStorage.setItem('todos', JSON.stringify(todos))
+function loadTodos() {
+    const todos = JSON.parse(localStorage.getItem('todos')) || [];
+    todos.forEach(addTodo);
 }
